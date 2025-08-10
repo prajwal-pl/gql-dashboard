@@ -5,6 +5,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import { typeDefs } from "./schema";
+import { resolvers } from "./resolvers";
+import { buildContext } from "./auth";
 
 dotenv.config();
 
@@ -13,11 +15,19 @@ async function startServer() {
 
   const server = new ApolloServer({
     typeDefs: typeDefs,
+    resolvers: resolvers,
   });
 
   await server.start();
 
-  app.use("/graphql", cors(), express.json(), expressMiddleware(server));
+  app.use(
+    "/graphql",
+    cors(),
+    express.json(),
+    expressMiddleware(server, {
+      context: async ({ req }) => buildContext(req),
+    })
+  );
 
   const port = process.env.PORT || 8000;
   app.listen(port, () => {
