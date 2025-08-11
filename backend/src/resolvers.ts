@@ -28,7 +28,8 @@ export const resolvers = {
       return u;
     },
     dashboardStats: async (_: any, __: any, ctx: any) => {
-      requireRole(ctx, ["TEACHER", "ADMIN"]);
+      // Allow all authenticated users to view basic dashboard stats
+      requireAuth(ctx);
       // Minimal stats using users collection
       const [totalUsers, totalTeachers, totalStudents] = await Promise.all([
         prisma.user.count(),
